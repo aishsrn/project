@@ -39,7 +39,8 @@ int main()
 	
 	
 	
-	int n=0,w,i,ch,j;
+	int w,i,ch,j;
+	long int n=0;
 	char line[1024],a[100],q[1000];
 	FILE *f=fopen("/home/inxs/Downloads/sri/MASTER_QUOTE.csv","r");
 	fgets(line,1024,f);
@@ -51,9 +52,13 @@ int main()
 	while(fgets(line,1024,f))
 	{      //printf("%s",line);
 		n++;
+		//memset(b, '\0', sizeof(char) * 500);
+		//memset(q, '\0', sizeof(char) * 1000);
 		strcpy(q,"INSERT INTO master_t VALUES(");
 		getf(line,1,b);
+		
 		//printf("%s",b);
+		//printf("\n%ld",n);
 		if(strcmp("\'NSE\'",b)==0)		
 		{
 			for(i=0;i<8;i++)
@@ -65,13 +70,15 @@ int main()
 			}
 			
 			
-			if(mysql_query(s,q))
-		 	{ fprintf(stderr,"%s\n",mysql_error(s)); mysql_close(s); exit(1);}
-			printf("%s\n", q);
+			
+				if(mysql_query(s,q))
+		 		{ fprintf(stderr,"%s\n",mysql_error(s)); mysql_close(s); exit(1);}
+				//printf("%s\n", q);
+			
 		}
 	}
 
-	printf("%d",n);
+	//printf("%ld",n);
 	mysql_close(s);
 	return 0;
 }
