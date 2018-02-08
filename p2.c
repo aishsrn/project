@@ -4,7 +4,7 @@
 #include<math.h>
 int main()
 {
-	int ch,ti,i,temp;
+	int ch,ti,i,temp,diff;
 	float rf=7.12,org[100],curr,ydiff,annr,simr[100],stdd,cl[100];
 	char sym[100],yr[10],q[500],q2[100],q3[100],q4[100];
 	MYSQL *s=mysql_init(NULL);
@@ -26,6 +26,10 @@ int main()
 		else if(ch>2) printf("\nError");
 		else 
 		{
+			printf("\nEnter symbol:");
+			scanf("%s",sym);
+			printf("\nEnter from which year:");
+			scanf("%s",yr);
 			strcpy(q,"select close from nse_history_day where time in (select max(time) from nse_history_day where symbol=\'");
 			strcpy(q4,"\') and symbol=\'");
 			strcpy(q3,"\'");
@@ -41,7 +45,7 @@ int main()
 		   	res = mysql_use_result(s);
 		   	while ((row = mysql_fetch_row(res)) != NULL)
 		      			curr=atof(row[0]);
-			strcpy(q,"select max(year(time)) from nse_history_day symbol=\'");
+			strcpy(q,"select max(year(time)) from nse_history_day where symbol=\'");
 			strcpy(q3,"\'");
 			strcat(q,sym);
 			strcat(q,q3);
@@ -52,15 +56,12 @@ int main()
 		   	}
 		   	res = mysql_use_result(s);
 		   	while ((row = mysql_fetch_row(res)) != NULL)
-	      			yr=atof(row[0]);
+	      			ydiff=atof(row[0]);
 	
-			printf("\nEnter symbol:");
-			scanf("%s",sym);
-			printf("\nEnter from which year:");
-			scanf("%s",ydiff);
+			
 			strcpy(q,"select close from nse_history_day where time in (select min(time) from nse_history_day where symbol=\'");
 			strcpy(q2,"\' group by year(time)) and symbol=\'");
-			strcpy(q3,"\' and year(time)<=");
+			strcpy(q3,"\' and year(time)>=");
 			
 			strcat(q,sym);
 			strcat(q,q2);
@@ -80,7 +81,7 @@ int main()
 			
 			strcpy(q,"select close from nse_history_day where time in (select max(time) from nse_history_day where symbol=\'");
 			strcpy(q2,"\' group by year(time)) and symbol=\'");
-			strcpy(q4,"\' and year(time)<");
+			strcpy(q4,"\' and year(time)>=");
 			
 			strcat(q,sym);
 			strcat(q,q2);
@@ -97,7 +98,7 @@ int main()
    		
                        for(i=0;((row = mysql_fetch_row(res)) != NULL);i++)
       			{	cl[i]=atof(row[0]);
-				simr[i]=(cl[i]-org[i])/org[i];
+				simr[i]=(cl[i]-org[0])/org[0];
 				printf("\n%f",simr[i]);
 			}
 			temp=i-1;
@@ -120,13 +121,13 @@ int main()
       				stdd=atof(row[0]);
 
 			
-			
-			//annr=pow(simr[temp]+1,(1.0/ydiff))-1*100;
-			//printf("\n%f",annr);
+			diff=ydiff-atoi(yr);
+			annr=(pow(simr[temp]+1,(1.0/diff))-1)*100;
+			printf("\n%f",annr);
 			
 		}
 		
-	}while(ch!=4);   
+	}while(ch!=2);   
 	
 	mysql_free_result(res);
 	mysql_close(s);
