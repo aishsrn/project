@@ -2,10 +2,11 @@
 #include<mysql.h>
 #include<string.h>
 #include<math.h>
+#include"he.h"
 int main()
 {
-	int ch,ti,i,temp,diff;
-	float rf=7.12,org[100],curr,ydiff,annr,simr[100],stdd,cl[100];
+	int ch,ti,i,temp,diff,co=0;
+	float rf=0.07,org[100],curr,ydiff,annr[100],simr[100],stdd,cl[100],shar,sor,ss=0,me=0;
 	char sym[100],yr[10],q[500],q2[100],q3[100],q4[100];
 	MYSQL *s=mysql_init(NULL);
 	MYSQL_RES *res;
@@ -18,6 +19,7 @@ int main()
 	
 	
 	do{
+		co=0;me=0;ss=0;
 		printf("\n\tMENU\n1.Return\n2.Exit\nEnter choice:");
 		scanf("%d",&ch);
 		
@@ -99,14 +101,15 @@ int main()
                        for(i=0;((row = mysql_fetch_row(res)) != NULL);i++)
       			{	cl[i]=atof(row[0]);
 				simr[i]=(cl[i]-org[0])/org[0];
-				printf("\n%f",simr[i]);
+				annr[i]=(pow(simr[i]+1,(1.0/(i+1)))-1);
+				printf("\nYear:%d\tSR:%f\tAR:%f",atoi(yr)+i,simr[i],annr[i]);
 			}
 			temp=i-1;
 			
 			
 			
-			strcpy(q,"select stddev(close) from nse_history_day where symbol=\'");
-			strcpy(q2,"\' and year(time)<=");
+			/*strcpy(q,"select stddev(close) from nse_history_day where symbol=\'");
+			strcpy(q2,"\' and year(time)>=");
 			strcat(q,sym);
 			strcat(q,q2);
 			strcat(q,yr);
@@ -121,10 +124,30 @@ int main()
       				stdd=atof(row[0]);
 
 			
-			diff=ydiff-atoi(yr);
-			annr=(pow(simr[temp]+1,(1.0/diff))-1)*100;
-			printf("\n%f",annr);
+			diff=ydiff-atoi(yr)+1;
 			
+			shar=(annr-rf)/stdd;
+			
+			for(i=0;i<=temp;i++)
+				me+=annr[i];
+			me/=temp+1;
+			for(i=0;i<=temp;i++)
+				ss+=pow(annr[i]-me,2);
+			ss/=temp;
+			ss=sqrt(ss);
+			//printf("\nStddev:%f",ss);
+			shar=(annr[temp]-rf)/ss;
+			printf("\nSharpe ratio:%f",shar);
+			for(i=0;i<=temp;i++)
+				if(annr[i]<0) {me+=annr[i]; co++;}
+			me/=co;
+			for(i=0;i<=temp;i++)
+				if(annr[i]<0) ss+=pow(annr[i]-me,2);
+			ss/=co;
+			ss=sqrt(ss);
+			sor=(annr[temp]-rf)/ss;
+			printf("\nSortino ratio:%f",sor);*/
+			ratios(annr,temp,rf);
 		}
 		
 	}while(ch!=2);   
