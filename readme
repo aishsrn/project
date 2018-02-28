@@ -1,0 +1,5 @@
+about: technical ratio calculation
+
+dependancy: mysql
+
+compiling: gcc p2.c he.o -I/usr/local/include/ -I/usr/include/mysql -lmysqlclient -lm
